@@ -1,6 +1,7 @@
 package com.connect_screen.mirror;
 
 import android.content.Context;
+import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,6 +26,7 @@ import android.app.AlertDialog;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.connect_screen.mirror.job.AcquireShizuku;
 import com.connect_screen.mirror.job.ConnectToClient;
@@ -39,6 +41,7 @@ import java.util.List;
 public class MirrorSettingsActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     public static final String PREF_NAME = "mirror_settings";
+    private static final int REQUEST_MICROPHONE_PERMISSION = 2001;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -140,7 +143,23 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         Button connectClientButton = findViewById(R.id.connectClientButton);
         SwitchCompat useBlackImageCheckbox = findViewById(R.id.useBlackImageCheckbox);
         SwitchCompat preventAutoLockCheckbox = findViewById(R.id.preventAutoLockCheckbox);
-        SwitchCompat disableRemoteSubmixCheckbox = findViewById(R.id.disableRemoteSubmixCheckbox);
+        Spinner audioCaptureMethodSpinner = findViewById(R.id.audioCaptureMethodSpinner);
+        ArrayAdapter<String> audioCaptureMethodAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"自动", "强制使用 REMOTE_SUBMIX（需 Shizuku）", "强制使用系统内录（需麦克风权限）"});
+        audioCaptureMethodAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        audioCaptureMethodSpinner.setAdapter(audioCaptureMethodAdapter);
+        audioCaptureMethodSpinner.setSelection(Pref.getAudioCaptureMethod());
+        audioCaptureMethodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                preferences.edit().putInt(Pref.KEY_AUDIO_CAPTURE_METHOD, position).apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
         
         // 加载保存的设置
         boolean singleAppMode = Pref.getSingleAppMode();
@@ -158,7 +177,6 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         boolean autoConnectClient = Pref.getAutoConnectClient();
         boolean useBlackImage = Pref.getUseBlackImage();
         boolean preventAutoLock = Pref.getPreventAutoLock();
-        boolean disableRemoteSubmix = Pref.getDisableRemoteSubmix();
         
         singleAppModeCheckbox.setChecked(singleAppMode);
         autoRotateCheckbox.setChecked(autoRotate);
@@ -175,7 +193,6 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         autoConnectClientCheckbox.setChecked(autoConnectClient);
         useBlackImageCheckbox.setChecked(useBlackImage);
         preventAutoLockCheckbox.setChecked(preventAutoLock);
-        disableRemoteSubmixCheckbox.setChecked(disableRemoteSubmix);
         if (ShizukuUtils.hasPermission()) {
             autoScreenOffCheckbox.setText("自动熄屏（用音量键唤醒，如果无法唤醒长按电源键强制关机）");
         }
@@ -411,10 +428,6 @@ public class MirrorSettingsActivity extends AppCompatActivity {
             preventAutoLockCheckbox.setEnabled(false);
         }
 
-        // 添加禁用 REMOTE_SUBMIX 复选框监听器
-        disableRemoteSubmixCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            preferences.edit().putBoolean(Pref.KEY_DISABLE_REMOTE_SUBMIX, isChecked).apply();
-        });
     }
 
     @Override
@@ -432,10 +445,12 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         Button shizukuPermissionBtn = findViewById(R.id.shizukuPermissionBtn);
         TextView accessibilityStatus = findViewById(R.id.accessibilityStatus);
         TextView overlayStatus = findViewById(R.id.overlayStatus);
+        TextView microphoneStatus = findViewById(R.id.microphoneStatus);
         
         updateShizukuStatus(shizukuStatus, shizukuPermissionBtn);
         updateAccessibilityStatus(accessibilityStatus);
         updateOverlayStatus(overlayStatus);
+        updateMicrophoneStatus(microphoneStatus);
 
         // 更新无障碍状态显示
         SwitchCompat disableAccessibilityCheckbox = findViewById(R.id.disableAccessibilityCheckbox);
@@ -504,6 +519,37 @@ public class MirrorSettingsActivity extends AppCompatActivity {
                         Uri.parse("package:" + getPackageName()));
                 startActivity(intent);
             });
+        }
+    }
+
+    private void updateMicrophoneStatus(TextView statusView) {
+        if (statusView == null) {
+            return;
+        }
+        boolean hasPermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED;
+        statusView.setText(hasPermission ? "已授权" : "未授权");
+
+        // 获取或创建授权按钮
+        View parent = (View) statusView.getParent();
+        Button microphonePermissionBtn = parent.findViewById(R.id.microphonePermissionBtn);
+
+        // 根据授权状态显示或隐藏按钮
+        if (microphonePermissionBtn != null) {
+            microphonePermissionBtn.setVisibility(hasPermission ? View.GONE : View.VISIBLE);
+            microphonePermissionBtn.setOnClickListener(v -> ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    REQUEST_MICROPHONE_PERMISSION));
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_MICROPHONE_PERMISSION) {
+            updateMicrophoneStatus(findViewById(R.id.microphoneStatus));
         }
     }
 

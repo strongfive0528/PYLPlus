@@ -44,9 +44,10 @@
    | 同时输出（按键 + 力度） | 同时发送按键事件与力度数值 |
 
 3. 新增音频播放位置设置。可选择遵循客户端请求、始终由客户端播放、始终由本机播放。
-4. 设置页新增「设置生效提醒」区块与「应用设置并重启」按钮。
-5. 界面按 Material 设计风格重新排版。功能入口与操作逻辑保持不变。
-6. 修正左右摇杆上下方向与客户端相反的问题。
+4. 新增「声音采集方式」设置。可在自动、强制使用 REMOTE_SUBMIX、强制使用系统内录之间选择，默认使用系统内录。
+5. 设置页新增「设置生效提醒」区块与「应用设置并重启」按钮。
+6. 界面按 Material 设计风格重新排版。功能入口与操作逻辑保持不变。
+7. 修正左右摇杆上下方向与客户端相反的问题。
 
 ### 系统要求
 
@@ -60,7 +61,7 @@
 
 ### 安装
 
-1. 在仓库的 Releases 页面下载安装包，文件名为 `ConnectScreen-<版本号>-release.apk`，例如 `ConnectScreen-1.7.0-release.apk`。
+1. 在仓库的 Releases 页面下载安装包，文件名为 `ConnectScreen-<版本号>-release.apk`，例如 `ConnectScreen-1.7.2-release.apk`。
 2. 在设备上允许安装来自未知来源的应用后安装该文件。
 3. 安装包同时包含 arm64-v8a 与 armeabi-v7a 两种架构的原生库。
 
@@ -73,7 +74,7 @@
 | 权限 | 用途 | 是否必需 |
 | --- | --- | --- |
 | 屏幕录制（MediaProjection） | 捕获屏幕内容用于串流 | 必需 |
-| 录音（RECORD_AUDIO） | 采集系统音频 | 需要转发音频时必需 |
+| 录音（RECORD_AUDIO） | 采集系统音频并发送给客户端 | 需要转发音频时必需；不授权时串流很可能没有声音 |
 | 通知（POST_NOTIFICATIONS） | 显示前台服务通知 | 必需 |
 | 悬浮窗（SYSTEM_ALERT_WINDOW） | 显示悬浮返回按钮等控件 | 可选 |
 | 无障碍服务（Accessibility Service） | 在副屏模拟触摸事件 | 使用触摸相关功能时必需 |
@@ -108,7 +109,19 @@
 2. 打开该开关后，可选择「始终在 Moonlight 客户端播放」或「始终在手机上播放」。
 3. 该设置在新的串流会话创建时读取，修改后需重新连接。
 
-#### 5. 设置生效方式
+#### 5. 声音采集方式
+
+本应用有两种采集系统声音的实现，设置页的「声音采集方式」用于指定使用哪一种。
+
+| 选项 | 说明 | 前提条件 |
+| --- | --- | --- |
+| 自动 | Shizuku 用户服务就绪时使用 REMOTE_SUBMIX，否则使用系统内录 | 无 |
+| 强制使用 REMOTE_SUBMIX | 始终使用 REMOTE_SUBMIX 采集 | 需要 Shizuku，且系统版本为 Android 12 及以上 |
+| 强制使用系统内录 | 始终使用系统内录采集（默认） | 需要麦克风权限 |
+
+每次建立会话时，应用内日志会写明实际采用的采集方式。若所选路径当前不可用（例如 Shizuku 用户服务尚未就绪），日志还会记录原因与回退结果。当串流没有声音时，可切换到另一种采集方式后重新连接。
+
+#### 6. 设置生效方式
 
 设置项在应用运行期间即被写入，但涉及服务与串流的设置需要重新启动服务才会生效。设置页顶部的「设置生效提醒」区块提供「应用设置并重启」按钮，点击并确认后应用将结束当前服务并自动重新启动。执行该操作会断开当前串流，重新启动时可能需要重新授权屏幕录制。
 
@@ -271,9 +284,10 @@ This application outputs the Android device screen to an external monitor, telev
    | Combined output (key and pressure) | Sends both key events and the pressure value |
 
 3. Added the audio playback position setting. The options are: follow the client request, always play on the client, always play on this device.
-4. Added the "settings take effect" notice block and the "apply settings and restart" button to the settings screen.
-5. Rearranged the interface in Material design style. Feature entry points and interaction logic are unchanged.
-6. Fixed the inverted up/down direction of both analog sticks relative to the client.
+4. Added the audio capture method setting. The options are automatic, always use REMOTE_SUBMIX, and always use in-app capture. The default is in-app capture.
+5. Added the "settings take effect" notice block and the "apply settings and restart" button to the settings screen.
+6. Rearranged the interface in Material design style. Feature entry points and interaction logic are unchanged.
+7. Fixed the inverted up/down direction of both analog sticks relative to the client.
 
 ### System Requirements
 
@@ -287,7 +301,7 @@ This application outputs the Android device screen to an external monitor, telev
 
 ### Installation
 
-1. Download the package from the Releases page of this repository. The file name is `ConnectScreen-<version>-release.apk`, for example `ConnectScreen-1.7.0-release.apk`.
+1. Download the package from the Releases page of this repository. The file name is `ConnectScreen-<version>-release.apk`, for example `ConnectScreen-1.7.2-release.apk`.
 2. Allow installation from unknown sources on the device, then install the file.
 3. The package contains native libraries for both arm64-v8a and armeabi-v7a.
 
@@ -300,7 +314,7 @@ Notes on the package:
 | Permission | Purpose | Required |
 | --- | --- | --- |
 | Screen capture (MediaProjection) | Captures the screen for streaming | Yes |
-| Record audio (RECORD_AUDIO) | Captures system audio | Required only for audio forwarding |
+| Record audio (RECORD_AUDIO) | Captures system audio and sends it to the client | Required for audio forwarding; without it the stream is likely to have no sound |
 | Notifications (POST_NOTIFICATIONS) | Displays the foreground service notification | Yes |
 | Overlay (SYSTEM_ALERT_WINDOW) | Displays floating controls | Optional |
 | Accessibility service | Simulates touch events on the secondary display | Required for touch features |
@@ -335,7 +349,19 @@ All permissions are granted through the system interface or Shizuku. The applica
 2. When the switch is on, select either "always play on the Moonlight client" or "always play on the phone".
 3. This setting is read when a new streaming session is created, so reconnection is required after changing it.
 
-#### 5. How settings take effect
+#### 5. Audio capture method
+
+The application has two implementations for capturing system audio. The "audio capture method" setting selects which one is used.
+
+| Option | Description | Requirement |
+| --- | --- | --- |
+| Automatic | Uses REMOTE_SUBMIX when the Shizuku user service is ready, otherwise uses in-app capture | None |
+| Always use REMOTE_SUBMIX | Always captures through REMOTE_SUBMIX | Shizuku, and Android 12 or later |
+| Always use in-app capture | Always uses in-app capture (default) | Microphone permission |
+
+Each session records the capture method that was actually used in the in-application log. When the selected method is unavailable, for example because the Shizuku user service is not ready yet, the log also records the reason and the fallback. If a stream has no sound, switch to the other capture method and reconnect.
+
+#### 6. How settings take effect
 
 Settings are written while the application is running, but settings that affect the service and the streaming session take effect only after the service is restarted. The "settings take effect" block at the top of the settings screen provides an "apply settings and restart" button. After it is pressed and confirmed, the application stops the current service and restarts automatically. This disconnects the current streaming session, and the screen capture permission may be requested again after the restart.
 

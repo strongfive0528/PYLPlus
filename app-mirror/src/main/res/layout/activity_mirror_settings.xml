@@ -157,6 +157,39 @@
                     android:text="授权"
                     android:visibility="gone" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="麦克风权限状态: " />
+
+                <TextView
+                    android:id="@+id/microphoneStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/microphonePermissionBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="授权"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="注意：不授权麦克风权限时，串流很可能没有声音。串流音频依赖该权限采集系统声音，请在授权后再连接。"
+                android:textColor="@color/cs_danger"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <TextView
@@ -325,6 +358,27 @@
             android:text="关闭开关时维持现有协议逻辑；开启后固定使用所选位置。重新连接 Moonlight 后生效。"
             android:textAppearance="@style/TextAppearance.ConnectScreen.Body" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:padding="8dp"
+            android:text="声音采集方式"
+            android:textAppearance="@style/TextAppearance.ConnectScreen.Section" />
+
+        <Spinner
+            android:id="@+id/audioCaptureMethodSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="默认使用系统内录（不使用 REMOTE_SUBMIX），需要麦克风权限。REMOTE_SUBMIX 需要 Shizuku，路由更接近原版；自动：Shizuku 用户服务就绪时用 REMOTE_SUBMIX，否则用系统内录。切换后重新连接 Moonlight。"
+            android:textAppearance="@style/TextAppearance.ConnectScreen.Body" />
+
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/disableUsbAudioCheckbox"
             android:layout_width="match_parent"
@@ -354,14 +408,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="阻止自动锁屏（原理是修改系统设置里的超时时间）"
-            android:textSize="16sp"
-            android:padding="8dp"/>
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/disableRemoteSubmixCheckbox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="moonlight无声音，尝试不使用 REMOTE_SUBMIX"
             android:textSize="16sp"
             android:padding="8dp"/>
 

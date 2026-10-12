@@ -105,10 +105,37 @@ public class SunshineAudio {
     }
 
     private static boolean shouldUseShizukuAudio() {
-        if (Pref.getDisableRemoteSubmix()) {
+        boolean shizukuReady = State.userService != null
+                && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S;
+        int method = Pref.getAudioCaptureMethod();
+
+        if (method == Pref.AUDIO_CAPTURE_APP) {
+            State.log("声音采集方式：系统内录（设置中手动指定，需要麦克风权限）。若串流没有声音，"
+                    + "请在设置中将“声音采集方式”改为“强制使用 REMOTE_SUBMIX”并重新连接。");
             return false;
         }
-        return State.userService != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S;
+        if (method == Pref.AUDIO_CAPTURE_REMOTE_SUBMIX) {
+            if (shizukuReady) {
+                State.log("声音采集方式：REMOTE_SUBMIX（设置中手动指定，经 Shizuku 采集）。若串流没有声音，"
+                        + "请在设置中将“声音采集方式”改为“强制使用系统内录”并重新连接。");
+                return true;
+            }
+            // 手动指定但条件不满足时明确记录原因，便于排查“连上却没有声音”。
+            State.log("声音采集方式：设置的 REMOTE_SUBMIX 当前不可用，本次已改用系统内录（"
+                    + (State.userService == null ? "Shizuku 用户服务尚未就绪" : "系统版本低于 Android 12")
+                    + "）。若串流没有声音，请等待 Shizuku 用户服务就绪后重新连接，"
+                    + "或将“声音采集方式”改为“强制使用系统内录”。");
+            return false;
+        }
+        if (shizukuReady) {
+            State.log("声音采集方式：REMOTE_SUBMIX（自动判定，经 Shizuku 采集）。若串流没有声音，"
+                    + "请在设置中将“声音采集方式”改为“强制使用系统内录”并重新连接。");
+            return true;
+        }
+        State.log("声音采集方式：系统内录（自动判定"
+                + (State.userService == null ? "，Shizuku 用户服务尚未就绪" : "")
+                + "）。若串流没有声音，请在设置中将“声音采集方式”改为“强制使用 REMOTE_SUBMIX”并重新连接。");
+        return false;
     }
 
     private static boolean startRecording() {

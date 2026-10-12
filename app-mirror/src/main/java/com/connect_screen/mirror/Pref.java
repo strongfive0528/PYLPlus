@@ -26,7 +26,10 @@ public class Pref {
     public static final String KEY_DISABLE_ACCESSIBILITY = "disable_accessibility";
     public static final String KEY_USE_BLACK_IMAGE = "use_black_image";
     public static final String KEY_PREVENT_AUTO_LOCK = "prevent_auto_lock";
-    public static final String KEY_DISABLE_REMOTE_SUBMIX = "disable_remote_submix";
+    public static final String KEY_AUDIO_CAPTURE_METHOD = "audio_capture_method";
+    public static final int AUDIO_CAPTURE_AUTO = 0;
+    public static final int AUDIO_CAPTURE_REMOTE_SUBMIX = 1;
+    public static final int AUDIO_CAPTURE_APP = 2;
     public static final String KEY_GAMEPAD_TRIGGER_MODE = "gamepad_trigger_mode";
     public static final int GAMEPAD_TRIGGER_DIGITAL = 0;
     public static final int GAMEPAD_TRIGGER_ANALOG = 1;
@@ -121,8 +124,13 @@ public class Pref {
         return getBoolean(KEY_PREVENT_AUTO_LOCK, false);
     }
 
-    public static boolean getDisableRemoteSubmix() {
-        return getBoolean(KEY_DISABLE_REMOTE_SUBMIX, false);
+    public static int getAudioCaptureMethod() {
+        int method = getInt(KEY_AUDIO_CAPTURE_METHOD, AUDIO_CAPTURE_APP);
+        if (method == AUDIO_CAPTURE_AUTO || method == AUDIO_CAPTURE_REMOTE_SUBMIX) {
+            return method;
+        }
+        // 默认以及显式选择都使用系统内录，即“不使用 REMOTE_SUBMIX”。
+        return AUDIO_CAPTURE_APP;
     }
 
     public static int getGamepadTriggerMode() {
