@@ -6,11 +6,19 @@ import android.content.SharedPreferences;
 public class Pref {
     public static final String KEY_AUTO_ROTATE = "auto_rotate";
     public static final String KEY_AUTO_SCALE = "auto_scale";
+    public static final String KEY_AUTO_SCALE_MODE = "auto_scale_mode";
+    public static final int AUTO_SCALE_FORCE_OFF = 0;
+    public static final int AUTO_SCALE_AUTO = 1;
+    public static final int AUTO_SCALE_FORCE_ON = 2;
     public static final String KEY_SINGLE_APP_MODE = "single_app_mode";
     public static final String KEY_SELECTED_APP_PACKAGE = "selected_app_package";
     public static final String KEY_SELECTED_APP_NAME = "selected_app_name";
     public static final String KEY_SINGLE_APP_DPI = "single_app_dpi";
     public static final String KEY_AUTO_HIDE_FLOATING_BACK_BUTTON = "floating_back_button";
+    public static final String KEY_FLOATING_BUTTON_MODE = "floating_button_mode";
+    public static final int FLOATING_BUTTON_ALWAYS_SHOW = 0;
+    public static final int FLOATING_BUTTON_AUTO_HIDE = 1;
+    public static final int FLOATING_BUTTON_ALWAYS_HIDE = 2;
     public static final String KEY_AUTO_SCREEN_OFF = "auto_screen_off";
     public static final String KEY_AUTO_BIND_INPUT = "auto_bind_input";
     public static final String KEY_AUTO_MOVE_IME = "auto_move_ime";
@@ -48,6 +56,15 @@ public class Pref {
         return getBoolean(KEY_AUTO_SCALE, true);
     }
 
+    public static int getAutoScaleMode() {
+        int mode = getInt(KEY_AUTO_SCALE_MODE, -1);
+        if (mode == AUTO_SCALE_FORCE_OFF || mode == AUTO_SCALE_AUTO || mode == AUTO_SCALE_FORCE_ON) {
+            return mode;
+        }
+        // 旧版本只有布尔开关：关闭对应强制不缩放，开启对应自动缩放。
+        return getAutoScale() ? AUTO_SCALE_AUTO : AUTO_SCALE_FORCE_OFF;
+    }
+
     public static boolean getSingleAppMode() {
         return getBoolean(KEY_SINGLE_APP_MODE, false);
     }
@@ -58,6 +75,16 @@ public class Pref {
 
     public static boolean getAutoHideFloatingBackButton() {
         return getBoolean(KEY_AUTO_HIDE_FLOATING_BACK_BUTTON, false);
+    }
+
+    public static int getFloatingButtonMode() {
+        int mode = getInt(KEY_FLOATING_BUTTON_MODE, -1);
+        if (mode == FLOATING_BUTTON_ALWAYS_SHOW || mode == FLOATING_BUTTON_AUTO_HIDE
+                || mode == FLOATING_BUTTON_ALWAYS_HIDE) {
+            return mode;
+        }
+        // 旧版本是布尔开关：开启对应自动隐藏，关闭对应始终显示。
+        return getAutoHideFloatingBackButton() ? FLOATING_BUTTON_AUTO_HIDE : FLOATING_BUTTON_ALWAYS_SHOW;
     }
 
     public static boolean getAutoScreenOff() {

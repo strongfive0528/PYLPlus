@@ -57,7 +57,7 @@ public class AutoRotateAndScaleForDisplaylink {
         
         // 从 SharedPreferences 读取设置
         autoRotate = Pref.getAutoRotate();
-        autoScale = Pref.getAutoScale();
+        autoScale = Pref.getAutoScaleMode() != Pref.AUTO_SCALE_FORCE_OFF;
         
         DisplaylinkState displaylinkState = State.displaylinkState;
         displaylinkState.handlerThread = new HandlerThread("ListenOpenglAndPostFrame");

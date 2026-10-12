@@ -73,6 +73,23 @@ public class AutoRotateAndScaleForMoonlight {
         });
     }
 
+    /**
+     * 当前画面实际生效的缩放系数。强制缩放模式下输入坐标需要用它做逆变换，
+     * 使客户端上报的归一化坐标重新落回未缩放时的坐标系。
+     */
+    public float getCurrentScale() {
+        // 返回当前方向下正在绘制的那一路渲染器的缩放系数，否则输入坐标会按未生效的倍数换算。
+        boolean isLandscapeNow = SunshineService.instance != null
+                && SunshineService.instance.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
+        if (isLandscapeNow) {
+            LandscapeRenderer renderer = landscapeRenderer;
+            return renderer == null ? 1.0f : renderer.landscapeAutoScaler.getCurrentScale();
+        }
+        PortraitRenderer renderer = portraitRenderer;
+        return renderer == null ? 1.0f : renderer.getCurrentScale();
+    }
+
     private class OrientationChangeCallback implements DisplayManager.DisplayListener {
         @Override
         public void onDisplayAdded(int displayId) {}
@@ -122,7 +139,7 @@ public class AutoRotateAndScaleForMoonlight {
         }
         // 读取设置
         autoRotate = Pref.getAutoRotate();
-        autoScale = Pref.getAutoScale();
+        autoScale = Pref.getAutoScaleMode() != Pref.AUTO_SCALE_FORCE_OFF;
 
         // 获取手机主屏的完整显示信息
         DisplayManager displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
@@ -348,19 +365,38 @@ public class AutoRotateAndScaleForMoonlight {
         protected final ExternalTextureRenderer externalTextureRenderer;
         protected final EGLDisplay eglDisplay;
         protected final EGLSurface eglOutputSurface;
+        // 强制缩放在竖屏方向同样生效：倍数由几何关系算出，与像素探测无关。
+        private final boolean forcedScale;
+        private volatile float currentScale = 1.0f;
 
         public PortraitRenderer(int inputTextureId, EGLDisplay eglDisplay, EGLSurface eglOutputSurface) {
             this.externalTextureRenderer = new ExternalTextureRenderer(inputTextureId);
             this.eglDisplay = eglDisplay;
             this.eglOutputSurface = eglOutputSurface;
+            this.forcedScale = Pref.getAutoScaleMode() == Pref.AUTO_SCALE_FORCE_ON;
             portraitMvpMatrix = new float[16];
+            updateMvpMatrix(1.0f);
+        }
+
+        public float getCurrentScale() {
+            return currentScale;
+        }
+
+        // 先放大再旋转，两个方向都是围绕画面中心；等比缩放下先后顺序不影响结果。
+        private void updateMvpMatrix(float scale) {
             android.opengl.Matrix.setIdentityM(portraitMvpMatrix, 0);
-            android.opengl.Matrix.scaleM(portraitMvpMatrix, 0, 1, 1, 1.0f);
-            android.opengl.Matrix.setRotateM(portraitMvpMatrix, 0, 90, 0, 0, 1.0f);
+            android.opengl.Matrix.scaleM(portraitMvpMatrix, 0, scale, scale, 1.0f);
+            android.opengl.Matrix.rotateM(portraitMvpMatrix, 0, 90, 0, 0, 1);
         }
 
         @Override
         public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+            if (forcedScale) {
+                // 每帧重算，屏幕方向变化后倍数立即跟随。
+                float scale = SunshineMouse.computeForcedScale();
+                currentScale = scale;
+                updateMvpMatrix(scale);
+            }
             surfaceTexture.updateTexImage();
             externalTextureRenderer.renderFrame(portraitMvpMatrix);
             EGL14.eglSwapBuffers(eglDisplay, eglOutputSurface);
@@ -410,6 +446,7 @@ public class AutoRotateAndScaleForMoonlight {
             }
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             this.landscapeAutoScaler = new LandscapeAutoScaler(externalTextureRenderer, width, height, fbo[0]);
+            this.landscapeAutoScaler.setForcedScale(Pref.getAutoScaleMode() == Pref.AUTO_SCALE_FORCE_ON);
         }
 
         public void onFrameAvailable(SurfaceTexture surfaceTexture) {

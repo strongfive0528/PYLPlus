@@ -48,6 +48,9 @@
 5. 设置页新增「设置生效提醒」区块与「应用设置并重启」按钮。
 6. 界面按 Material 设计风格重新排版。功能入口与操作逻辑保持不变。
 7. 修正左右摇杆上下方向与客户端相反的问题。
+8. 「缩放去黑边」由开关改为三种模式，可在强制不缩放、自动缩放、强制缩放之间选择，并且在竖屏方向同样生效。
+9. 「单应用投屏下的悬浮返回键」由开关改为三种模式，可在始终显示、自动隐藏、始终隐藏之间选择。
+10. 设置页右下角新增常驻的圆形「应用设置并重启」按钮，滚动到任何位置都可以直接点击，顶部原有入口保留。
 
 ### 系统要求
 
@@ -288,6 +291,9 @@ This application outputs the Android device screen to an external monitor, telev
 5. Added the "settings take effect" notice block and the "apply settings and restart" button to the settings screen.
 6. Rearranged the interface in Material design style. Feature entry points and interaction logic are unchanged.
 7. Fixed the inverted up/down direction of both analog sticks relative to the client.
+8. The "scaling to remove black borders" switch became three modes: never scale, scale automatically, and always scale. It now also applies in portrait orientation.
+9. The "floating back button in single-application streaming" switch became three modes: always show, hide automatically, and always hide.
+10. Added a persistent round "apply settings and restart" button at the bottom right of the settings screen, reachable from any scroll position, in addition to the existing entry at the top.
 
 ### System Requirements
 

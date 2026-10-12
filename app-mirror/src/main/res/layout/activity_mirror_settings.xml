@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cs_background"
-    android:fillViewport="true">
+    android:background="@color/cs_background">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -286,13 +290,25 @@
             android:textSize="16sp"
             android:padding="8dp"/>
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/autoScaleCheckbox"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="自动缩放去黑边"
-            android:textSize="16sp"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:text="缩放去黑边"
+            android:textSize="16sp" />
+
+        <Spinner
+            android:id="@+id/autoScaleModeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="强制不缩放：保持原始画面。自动缩放：检测到对称黑边时放大裁掉，一旦有输入就恢复。强制缩放：始终保持放大裁掉的效果，并同步换算输入坐标。单应用投屏时该设置不生效。"
+            android:textAppearance="@style/TextAppearance.ConnectScreen.Body" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/autoScreenOffCheckbox"
@@ -322,6 +338,7 @@
             android:padding="8dp"
             android:text="开关：仅按键；线性：仅力度；同时输出：按键与力度均生效。切换后重新连接 Moonlight。"
             android:textAppearance="@style/TextAppearance.ConnectScreen.Body" />
+
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/useBlackImageCheckbox"
@@ -411,13 +428,25 @@
             android:textSize="16sp"
             android:padding="8dp"/>
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/autoHideFloatingCheckbox"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="自动隐藏悬浮返回键（单击返回上一级，双击返回被投屏应用）"
-            android:textSize="16sp"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:text="悬浮返回键（单击返回上一级，双击返回被投屏应用）"
+            android:textSize="16sp" />
+
+        <Spinner
+            android:id="@+id/floatingButtonModeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="始终显示：一直可见。自动隐藏：5 秒后淡出，触摸后重新出现。始终隐藏：不创建悬浮键，单击返回与双击回应用的功能随之不可用。"
+            android:textAppearance="@style/TextAppearance.ConnectScreen.Body" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/autoConnectClientCheckbox"
@@ -498,4 +527,19 @@
             android:textColor="#666666"/>
 
     </LinearLayout>
-</ScrollView> 
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/applySettingsFab"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        android:background="@drawable/cs_fab_circle"
+        android:clickable="true"
+        android:contentDescription="应用设置并重启"
+        android:focusable="true"
+        android:elevation="6dp"
+        android:padding="16dp"
+        android:src="@drawable/ic_check" />
+</FrameLayout>

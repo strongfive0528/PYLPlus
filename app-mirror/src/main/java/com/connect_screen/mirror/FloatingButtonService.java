@@ -36,6 +36,7 @@ public class FloatingButtonService extends Service {
     private static final long DOUBLE_TAP_TIMEOUT = 300; // 双击间隔：300毫秒
     private long lastTapTime = 0;
     private boolean autoHide;
+    private int buttonMode = Pref.FLOATING_BUTTON_ALWAYS_SHOW;
 
     public static void startForMirror() {
         if (!Pref.getShowFloatingInMirrorMode()) {
@@ -60,7 +61,13 @@ public class FloatingButtonService extends Service {
                 if (floatingView != null) {
                     this.onDestroy();
                 }
-                autoHide = Pref.getAutoHideFloatingBackButton();
+                buttonMode = Pref.getFloatingButtonMode();
+                if (buttonMode == Pref.FLOATING_BUTTON_ALWAYS_HIDE) {
+                    // 始终隐藏：不创建悬浮窗，也就不占用屏幕、不拦截触摸。
+                    State.log("悬浮返回键设置为始终隐藏，未创建悬浮窗");
+                    return START_STICKY;
+                }
+                autoHide = buttonMode == Pref.FLOATING_BUTTON_AUTO_HIDE;
                 createFloatingButton();
             }
         }
@@ -191,6 +198,9 @@ public class FloatingButtonService extends Service {
     }
 
     private void fadeOutButton() {
+        if (floatingView == null) {
+            return;
+        }
         floatingView.animate()
                 .alpha(0.0f)
                 .setDuration(500)
@@ -204,6 +214,9 @@ public class FloatingButtonService extends Service {
     }
 
     public void resetButtonVisibility() {
+        if (floatingView == null) {
+            return;
+        }
         if (autoHide) {
             floatingView.setAlpha(1.0f);
             isReady = true;

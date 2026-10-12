@@ -49,7 +49,7 @@ public class ProjectViaMoonlight implements Job {
             State.log("本次会话不发送音频到客户端，使用手机喇叭播放");
         }
         boolean autoRotate = Pref.getAutoRotate();
-        boolean autoScale = Pref.getAutoScale();
+        boolean autoScale = Pref.getAutoScaleMode() != Pref.AUTO_SCALE_FORCE_OFF;
         boolean singleAppMode = Pref.getSingleAppMode();
         if (singleAppMode) {
             if (ShizukuUtils.hasPermission()) {

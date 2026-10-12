@@ -17,6 +17,20 @@ public class LandscapeAutoScaler {
     private boolean hasSymmetricBlackBar = false;
     private int topBottomBlackBarSize = 0;
     private int leftRightBlackBarSize = 0;
+    // 当前生效的缩放系数，供输入坐标做逆变换使用。渲染线程写入，输入线程读取。
+    private volatile float currentScale = 1.0f;
+    // 强制缩放模式：只允许建立与保持缩放，不允许回退到未缩放状态。
+    private boolean forcedScale = false;
+    // 强制缩放模式下已经建立起来的缩放系数。
+    private float latchedScale = 1.0f;
+
+    public void setForcedScale(boolean forced) {
+        forcedScale = forced;
+    }
+
+    public float getCurrentScale() {
+        return currentScale;
+    }
 
     public LandscapeAutoScaler(ExternalTextureRenderer externalTextureRenderer, int width, int height, int fbo) {
         this.externalTextureRenderer = externalTextureRenderer;
@@ -33,36 +47,52 @@ public class LandscapeAutoScaler {
     }
 
     public void onFrame() {
-        if (frameCounter == 0) {
+        // 强制缩放模式只做几何计算，不读像素；自动缩放模式维持原有的周期性探测。
+        boolean shouldAdjust = forcedScale ? frameCounter % 10 == 0 : frameCounter == 0;
+        if (shouldAdjust) {
             adjustLandscapeMvpMatrix();
         }
         frameCounter = (frameCounter + 1) % 300;
     }
 
     private void adjustLandscapeMvpMatrix() {
+        if (forcedScale) {
+            // 强制缩放：放大倍数直接由镜像几何算出，与像素探测无关，因此不存在探测失败的情况，
+            // 连接后立即生效并恒定保持；输入坐标用同一个系数做逆变换，两者始终一致。
+            float forcedValue = SunshineMouse.computeForcedScale();
+            if (forcedValue < 1.0f) {
+                forcedValue = 1.0f;
+            }
+            latchedScale = forcedValue;
+            currentScale = forcedValue;
+            android.opengl.Matrix.setIdentityM(landscapeMvpMatrix, 0);
+            android.opengl.Matrix.scaleM(landscapeMvpMatrix, 0, forcedValue, forcedValue, 1.0f);
+            return;
+        }
+
         detectBlackBar();
+        float scale = 1.0f;
         if (hasSymmetricBlackBar) {
             // 计算缩放比例
             float scaleX = (float)(width) / (width - 2 * leftRightBlackBarSize);
             float scaleY = (float)(height) / (height - 2 * topBottomBlackBarSize);
-            float scale = Math.min(scaleX, scaleY);
-
-            // 重置矩阵
-            android.opengl.Matrix.setIdentityM(landscapeMvpMatrix, 0);
-
-            // 应用缩放
-            android.opengl.Matrix.scaleM(landscapeMvpMatrix, 0, scale, scale, 1.0f);
+            scale = Math.min(scaleX, scaleY);
 
             android.util.Log.d("MirrorActivity", String.format(
                     "应用缩放变换: scaleX=%.2f, scaleY=%.2f, 最终scale=%.2f",
                     scaleX, scaleY, scale
             ));
+        }
+
+        if (scale > 1.0f) {
+            android.opengl.Matrix.setIdentityM(landscapeMvpMatrix, 0);
+            android.opengl.Matrix.scaleM(landscapeMvpMatrix, 0, scale, scale, 1.0f);
         } else {
-            // 如果没有对称黑边，使用单位矩阵
             for(int i = 0; i < identityMvpMatrix.length; i++) {
                 landscapeMvpMatrix[i] = identityMvpMatrix[i];
             }
         }
+        currentScale = scale;
     }
 
 
@@ -180,10 +210,15 @@ public class LandscapeAutoScaler {
     }
 
     public void exitScale() {
+        if (forcedScale) {
+            // 强制缩放模式下不允许退出缩放。
+            return;
+        }
         if (!hasSymmetricBlackBar) {
             return;
         }
         hasSymmetricBlackBar = false;
+        currentScale = 1.0f;
         Log.d("LandscapeAutoScaler", "exitScale");
         // 如果没有对称黑边，使用单位矩阵
         for(int i = 0; i < identityMvpMatrix.length; i++) {

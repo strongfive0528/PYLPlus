@@ -49,24 +49,9 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mirror_settings);
         preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
-        findViewById(R.id.applySettingsButton).setOnClickListener(v -> {
-            AlertDialog restartDialog = new AlertDialog.Builder(this)
-                        .setTitle("应用设置并重启？")
-                        .setMessage("当前串流会断开，服务和应用将重新启动；随后可能需要重新授权录屏。")
-                        .setNegativeButton("取消", null)
-                        .setPositiveButton("重启", (dialog, which) -> {
-                            // Most setting listeners use apply(); force the current snapshot to disk
-                            // before ExitAll terminates the process.
-                            if (!preferences.edit().commit()) {
-                                Toast.makeText(this, "设置保存失败，请重试", Toast.LENGTH_LONG).show();
-                                return;
-                            }
-                            ExitAll.execute(this, true);
-                        })
-                        .create();
-            DialogStyle.apply(restartDialog);
-            restartDialog.show();
-        });
+        // 两个入口共用同一套确认与重启逻辑：顶部的提示卡片按钮，以及常驻右下角的圆形按钮。
+        findViewById(R.id.applySettingsButton).setOnClickListener(v -> confirmApplySettingsAndRestart());
+        findViewById(R.id.applySettingsFab).setOnClickListener(v -> confirmApplySettingsAndRestart());
         
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("屏易连设置");
@@ -77,10 +62,42 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         Button selectAppButton = findViewById(R.id.selectAppButton);
         View singleAppContainer = findViewById(R.id.singleAppContainer);
         SwitchCompat autoRotateCheckbox = findViewById(R.id.autoRotateCheckbox);
-        SwitchCompat autoScaleCheckbox = findViewById(R.id.autoScaleCheckbox);
+        Spinner autoScaleModeSpinner = findViewById(R.id.autoScaleModeSpinner);
+        ArrayAdapter<String> autoScaleModeAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"强制不缩放", "自动缩放", "强制缩放"});
+        autoScaleModeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        autoScaleModeSpinner.setAdapter(autoScaleModeAdapter);
+        autoScaleModeSpinner.setSelection(Pref.getAutoScaleMode());
+        autoScaleModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                preferences.edit().putInt(Pref.KEY_AUTO_SCALE_MODE, position).apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
         EditText dpiEditText = findViewById(R.id.dpiEditText);
         LinearLayout dpiLayout = findViewById(R.id.dpiLayout);
-        SwitchCompat autoHideFloatingCheckbox = findViewById(R.id.autoHideFloatingCheckbox);
+        Spinner floatingButtonModeSpinner = findViewById(R.id.floatingButtonModeSpinner);
+        ArrayAdapter<String> floatingButtonModeAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"单应用投屏下始终显示悬浮按钮", "单应用投屏下自动隐藏悬浮按钮", "单应用投屏下始终隐藏悬浮按钮"});
+        floatingButtonModeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        floatingButtonModeSpinner.setAdapter(floatingButtonModeAdapter);
+        floatingButtonModeSpinner.setSelection(Pref.getFloatingButtonMode());
+        floatingButtonModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                preferences.edit().putInt(Pref.KEY_FLOATING_BUTTON_MODE, position).apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
         SwitchCompat autoScreenOffCheckbox = findViewById(R.id.autoScreenOffCheckbox);
         Spinner gamepadTriggerModeSpinner = findViewById(R.id.gamepadTriggerModeSpinner);
         ArrayAdapter<String> triggerModeAdapter = new ArrayAdapter<>(this,
@@ -164,9 +181,7 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         // 加载保存的设置
         boolean singleAppMode = Pref.getSingleAppMode();
         boolean autoRotate = Pref.getAutoRotate();
-        boolean autoScale = Pref.getAutoScale();
         int singleAppDpi = Pref.getSingleAppDpi();
-        boolean floatingBackButton = Pref.getAutoHideFloatingBackButton();
         boolean autoScreenOff = Pref.getAutoScreenOff();
         boolean autoBindInput = Pref.getAutoBindInput();
         boolean autoMoveIme = Pref.getAutoMoveIme();
@@ -180,9 +195,7 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         
         singleAppModeCheckbox.setChecked(singleAppMode);
         autoRotateCheckbox.setChecked(autoRotate);
-        autoScaleCheckbox.setChecked(autoScale);
         dpiEditText.setText(String.valueOf(singleAppDpi));
-        autoHideFloatingCheckbox.setChecked(floatingBackButton);
         autoScreenOffCheckbox.setChecked(autoScreenOff);
         autoBindInputCheckbox.setChecked(autoBindInput);
         autoMoveImeCheckbox.setChecked(autoMoveIme);
@@ -208,7 +221,7 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         // 监听复选框变化
         singleAppModeCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             preferences.edit().putBoolean(Pref.KEY_SINGLE_APP_MODE, isChecked).apply();
-            autoScaleCheckbox.setEnabled(!isChecked);
+            autoScaleModeSpinner.setEnabled(!isChecked);
             autoMatchAspectRatioCheckbox.setEnabled(!isChecked);
             showFloatingInMirrorModeCheckbox.setEnabled(!isChecked);
             singleAppContainer.setVisibility(isChecked ? View.VISIBLE : View.GONE);
@@ -219,7 +232,6 @@ public class MirrorSettingsActivity extends AppCompatActivity {
                 singleAppModeCheckbox.setText("单应用投屏: " + selectedAppName);
             }
         });
-        autoScaleCheckbox.setEnabled(!singleAppMode);
         autoMatchAspectRatioCheckbox.setEnabled(!singleAppMode);
         showFloatingInMirrorModeCheckbox.setEnabled(!singleAppMode);
         
@@ -227,10 +239,7 @@ public class MirrorSettingsActivity extends AppCompatActivity {
             preferences.edit().putBoolean(Pref.KEY_AUTO_ROTATE, isChecked).apply();
         });
 
-        autoScaleCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            preferences.edit().putBoolean(Pref.KEY_AUTO_SCALE, isChecked).apply();
-        });
-        autoScaleCheckbox.setEnabled(!singleAppMode);
+        autoScaleModeSpinner.setEnabled(!singleAppMode);
 
         // 将分辨率相关控件替换为单个按钮和显示当前分辨率的文本视图
         Button resolutionButton = findViewById(R.id.resolutionButton);
@@ -281,11 +290,6 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         Button dpiConfirmButton = findViewById(R.id.dpiConfirmButton);
         dpiConfirmButton.setOnClickListener(v -> {
             saveDpiSetting(dpiEditText);
-        });
-
-        // 添加悬浮返回键复选框监听器
-        autoHideFloatingCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            preferences.edit().putBoolean(Pref.KEY_AUTO_HIDE_FLOATING_BACK_BUTTON, isChecked).apply();
         });
 
         // 设置单应用模式容器的可见性
@@ -434,6 +438,25 @@ public class MirrorSettingsActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         SunshineServer.suppressPin = null;
+    }
+
+    private void confirmApplySettingsAndRestart() {
+        AlertDialog restartDialog = new AlertDialog.Builder(this)
+                .setTitle("应用设置并重启？")
+                .setMessage("当前串流会断开，服务和应用将重新启动；随后可能需要重新授权录屏。")
+                .setNegativeButton("取消", null)
+                .setPositiveButton("重启", (dialog, which) -> {
+                    // Most setting listeners use apply(); force the current snapshot to disk
+                    // before ExitAll terminates the process.
+                    if (!preferences.edit().commit()) {
+                        Toast.makeText(this, "设置保存失败，请重试", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    ExitAll.execute(this, true);
+                })
+                .create();
+        DialogStyle.apply(restartDialog);
+        restartDialog.show();
     }
 
     @Override

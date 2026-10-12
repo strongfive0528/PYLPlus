@@ -48,6 +48,7 @@ public class SunshineMouse {
     private static float landscapeMirrorWidth;
     private static float landscapeMirrorHeight;
     private static boolean autoScale;
+    private static int autoScaleMode = Pref.AUTO_SCALE_AUTO;
     private static boolean singleAppMode;
     private static boolean autoRotate;
 
@@ -63,7 +64,8 @@ public class SunshineMouse {
         screenHeight = height;
         singleAppMode = Pref.getSingleAppMode();
         autoRotate = Pref.getAutoRotate();
-        autoScale = Pref.getAutoScale();
+        autoScaleMode = Pref.getAutoScaleMode();
+        autoScale = autoScaleMode != Pref.AUTO_SCALE_FORCE_OFF;
 
         DisplayManager displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
         Display defaultDisplay = displayManager.getDisplay(Display.DEFAULT_DISPLAY);
@@ -141,11 +143,51 @@ public class SunshineMouse {
         boolean isLandscape = SunshineService.instance.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
         float xInScreen = x * screenWidth;
         float yInScreen = y * screenHeight;
+        // 强制缩放时画面在虚拟屏内被居中放大，客户端上报的坐标对应放大后的画面，
+        // 先用当前缩放系数做逆变换回到未缩放坐标系，再套用原有的黑边换算。
+        if (autoScaleMode == Pref.AUTO_SCALE_FORCE_ON && autoRotateAndScaleForMoonlight != null) {
+            float currentScale = autoRotateAndScaleForMoonlight.getCurrentScale();
+            if (currentScale > 0.0f && currentScale != 1.0f) {
+                float inverseScale = 1.0f / currentScale;
+                xInScreen = screenWidth / 2.0f + (xInScreen - screenWidth / 2.0f) * inverseScale;
+                yInScreen = screenHeight / 2.0f + (yInScreen - screenHeight / 2.0f) * inverseScale;
+            }
+        }
         if (isLandscape) {
             return translateRotation90Mirror(xInScreen, yInScreen);
         } else {
             return translateRotation0Mirror(xInScreen, yInScreen);
         }
+    }
+
+    /**
+     * 强制缩放使用的放大倍数。直接由镜像几何按当前屏幕方向算出，不读像素、不做探测，
+     * 因此连接后立即生效，也不会因为画面内容变化而失效；输入坐标用同一个系数做逆变换。
+     */
+    public static float computeForcedScale() {
+        if (screenWidth <= 0 || screenHeight <= 0) {
+            return 1.0f;
+        }
+        boolean isLandscape = SunshineService.instance != null
+                && SunshineService.instance.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
+
+        // 横竖屏切换时虚拟屏的宽高是互换的（见 AutoRotateAndScaleForMoonlight.checkRotation），
+        // 本机屏幕尺寸同样按当前方向取值。
+        float frameWidth = isLandscape ? screenWidth : screenHeight;
+        float frameHeight = isLandscape ? screenHeight : screenWidth;
+        float localWidth = isLandscape ? defaultDisplayWidth : defaultDisplayHeight;
+        float localHeight = isLandscape ? defaultDisplayHeight : defaultDisplayWidth;
+        if (frameWidth <= 0 || frameHeight <= 0 || localWidth <= 0 || localHeight <= 0) {
+            return 1.0f;
+        }
+
+        // 放大倍数 = 两个宽高比中较大者除以较小者：本机画面按比例放入虚拟屏后，
+        // 较大的那条边与虚拟屏的同一边等长，多出来的部分（黑边）被裁掉。
+        // 横竖屏的宽高是同时互换的，相除后结果相同，所以两个方向倍数一致。
+        float frameRatio = frameWidth / frameHeight;
+        float localRatio = localWidth / localHeight;
+        return localRatio > frameRatio ? localRatio / frameRatio : frameRatio / localRatio;
     }
 
     private static Point translateRotation0Mirror(float xInScreen, float yInScreen) {
@@ -369,7 +411,8 @@ public class SunshineMouse {
     private static List<MotionEvent> gesture = new ArrayList<>();
 
     private static void injectEvent(String prefix, MotionEvent event) {
-        if (autoScale && autoRotateAndScaleForMoonlight != null) {
+        // 自动缩放模式下用户一旦操作就恢复原画面；强制缩放模式保留缩放，靠坐标逆变换对齐。
+        if (autoScaleMode == Pref.AUTO_SCALE_AUTO && autoRotateAndScaleForMoonlight != null) {
             autoRotateAndScaleForMoonlight.exitScale();
         }
         if (inputManager != null) {
