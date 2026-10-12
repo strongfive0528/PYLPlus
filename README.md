@@ -60,7 +60,7 @@
 
 ### 安装
 
-1. 在仓库的 Releases 页面下载安装包，文件名为 `ConnectScreen-<版本号>-release.apk`，例如 `ConnectScreen-1.6.9-release.apk`。
+1. 在仓库的 Releases 页面下载安装包，文件名为 `ConnectScreen-<版本号>-release.apk`，例如 `ConnectScreen-1.7.0-release.apk`。
 2. 在设备上允许安装来自未知来源的应用后安装该文件。
 3. 安装包同时包含 arm64-v8a 与 armeabi-v7a 两种架构的原生库。
 
@@ -287,7 +287,7 @@ This application outputs the Android device screen to an external monitor, telev
 
 ### Installation
 
-1. Download the package from the Releases page of this repository. The file name is `ConnectScreen-<version>-release.apk`, for example `ConnectScreen-1.6.9-release.apk`.
+1. Download the package from the Releases page of this repository. The file name is `ConnectScreen-<version>-release.apk`, for example `ConnectScreen-1.7.0-release.apk`.
 2. Allow installation from unknown sources on the device, then install the file.
 3. The package contains native libraries for both arm64-v8a and armeabi-v7a.
 

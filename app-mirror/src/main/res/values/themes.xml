@@ -23,6 +23,9 @@
         <item name="switchStyle">@style/Widget.ConnectScreen.Switch</item>
         <item name="spinnerStyle">@style/Widget.ConnectScreen.Spinner</item>
     </style>
+    <!-- 注意：本样式把按钮文字设为白色，并依赖 cs_button_primary 的深蓝底色保证可见。
+         平台版 AlertDialog 的按钮栏会沿用该文字颜色，但没有这层底色，因此弹出对话框的
+         按钮必须另外指定文字颜色，统一由 DialogStyle.apply() 处理。 -->
     <style name="Widget.ConnectScreen.Button" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/cs_button_primary</item>
         <item name="android:textColor">@color/cs_surface</item>

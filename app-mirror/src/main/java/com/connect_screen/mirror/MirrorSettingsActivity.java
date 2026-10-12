@@ -61,14 +61,7 @@ public class MirrorSettingsActivity extends AppCompatActivity {
                             ExitAll.execute(this, true);
                         })
                         .create();
-            // The app's global button style uses white text, while platform alert buttons
-            // can have a white background on this ROM. Set both labels explicitly.
-            restartDialog.setOnShowListener(dialog -> {
-                restartDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-                        .setTextColor(getColor(R.color.cs_text_secondary));
-                restartDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                        .setTextColor(getColor(R.color.cs_primary_dark));
-            });
+            DialogStyle.apply(restartDialog);
             restartDialog.show();
         });
         
@@ -550,7 +543,9 @@ public class MirrorSettingsActivity extends AppCompatActivity {
             singleAppModeCheckbox.setText("单应用投屏: " + selectedName);
         });
         
-        builder.show();
+        AlertDialog appPickerDialog = builder.create();
+        DialogStyle.apply(appPickerDialog);
+        appPickerDialog.show();
     }
 
     // 自定义适配器用于显示应用图标和名称
@@ -714,7 +709,9 @@ public class MirrorSettingsActivity extends AppCompatActivity {
             }
         });
         builder.setNegativeButton("取消", null);
-        builder.show();
+        AlertDialog resolutionDialog = builder.create();
+        DialogStyle.apply(resolutionDialog);
+        resolutionDialog.show();
     }
 
     // 加载客户端列表
@@ -789,6 +786,8 @@ public class MirrorSettingsActivity extends AppCompatActivity {
             }
         });
         builder.setNegativeButton("取消", null);
-        builder.show();
+        AlertDialog manualClientDialog = builder.create();
+        DialogStyle.apply(manualClientDialog);
+        manualClientDialog.show();
     }
 } 

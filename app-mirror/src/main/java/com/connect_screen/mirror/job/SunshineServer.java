@@ -28,6 +28,7 @@ import android.media.AudioManager;
 import androidx.annotation.NonNull;
 
 import com.connect_screen.mirror.Pref;
+import com.connect_screen.mirror.DialogStyle;
 import com.connect_screen.mirror.State;
 import com.connect_screen.mirror.SunshineService;
 import com.connect_screen.mirror.TouchpadAccessibilityService;
@@ -96,8 +97,10 @@ public class SunshineServer {
                                 Toast.makeText(context, "请输入4位数字PIN码", Toast.LENGTH_SHORT).show();
                             }
                         })
-                        .setNegativeButton("取消", (dialog, which) -> dialog.cancel())
-                        .show();
+                        .setNegativeButton("取消", (dialog, which) -> dialog.cancel());
+                AlertDialog pinDialog = builder.create();
+                DialogStyle.apply(pinDialog);
+                pinDialog.show();
             }
         });
     }
@@ -163,7 +166,7 @@ public class SunshineServer {
                 return;
             }
             
-            new AlertDialog.Builder(context)
+            AlertDialog encoderErrorDialog = new AlertDialog.Builder(context)
                 .setTitle("无法配置编码器")
                 .setMessage(errorMessage)
                 .setPositiveButton("确定", (dialog, which) -> {
@@ -171,7 +174,9 @@ public class SunshineServer {
                     stopVirtualDisplay();
                 })
                 .setCancelable(false)
-                .show();
+                .create();
+            DialogStyle.apply(encoderErrorDialog);
+            encoderErrorDialog.show();
         });
     }
 
