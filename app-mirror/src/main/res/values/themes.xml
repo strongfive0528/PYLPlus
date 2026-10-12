@@ -1,0 +1,77 @@
+<resources>
+    <!-- 基础应用主题 -->
+    <style name="X11Theme" parent="@style/Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/cs_primary</item>
+        <item name="colorPrimaryDark">@color/cs_primary_dark</item>
+        <item name="colorAccent">@color/cs_accent</item>
+        <item name="colorControlActivated">@color/cs_accent</item>
+        <item name="android:windowBackground">@color/cs_background</item>
+        <item name="android:statusBarColor">@color/cs_primary_dark</item>
+        <item name="android:navigationBarColor">@color/cs_background</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColorPrimary">@color/cs_text</item>
+        <item name="android:textColorSecondary">@color/cs_text_secondary</item>
+        <item name="buttonStyle">@style/Widget.ConnectScreen.Button</item>
+        <item name="android:buttonStyle">@style/Widget.ConnectScreen.Button</item>
+        <item name="switchStyle">@style/Widget.ConnectScreen.Switch</item>
+        <item name="spinnerStyle">@style/Widget.ConnectScreen.Spinner</item>
+    </style>
+    <style name="Widget.ConnectScreen.Button" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/cs_button_primary</item>
+        <item name="android:textColor">@color/cs_surface</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">64dp</item>
+        <item name="android:paddingLeft">18dp</item>
+        <item name="android:paddingRight">18dp</item>
+    </style>
+    <style name="Widget.ConnectScreen.Button.Secondary" parent="Widget.ConnectScreen.Button">
+        <item name="android:background">@drawable/cs_button_secondary</item>
+        <item name="android:textColor">@color/cs_primary</item>
+    </style>
+    <style name="Widget.ConnectScreen.Button.Danger" parent="Widget.ConnectScreen.Button">
+        <item name="android:background">@drawable/cs_button_danger</item>
+        <item name="android:textColor">@color/cs_danger</item>
+    </style>
+    <style name="Widget.ConnectScreen.Switch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:background">@drawable/cs_card</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textColor">@color/cs_text</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="Widget.ConnectScreen.Spinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@drawable/cs_spinner</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">48dp</item>
+    </style>
+    <style name="TextAppearance.ConnectScreen.Title" parent="TextAppearance.AppCompat.Headline">
+        <item name="android:textColor">@color/cs_text</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.ConnectScreen.Section" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">@color/cs_text</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.ConnectScreen.Body" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/cs_text_secondary</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+</resources> 

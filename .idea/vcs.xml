@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app-mirror/src/main/cpp/dependencies/Simple-Web-Server" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app-mirror/src/main/cpp/dependencies/libwordexp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app-mirror/src/main/cpp/dependencies/moonlight-common-c" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app-mirror/src/main/cpp/dependencies/moonlight-common-c/enet" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app-mirror/src/main/cpp/dependencies/nanors" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app-mirror/src/main/cpp/dependencies/openssl-cmake" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/connect-screen.com" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/OpenXR-SDK" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/bzip2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libepoxy" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libfontenc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libtirpc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libx11" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libxau" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libxcvt" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libxdmcp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libxfont" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libxkbfile" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libxshmfence" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/libxtrans" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/pixman" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/xkbcomp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/xorgproto" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/termux-x11/app/src/main/cpp/xserver" vcs="Git" />
+  </component>
+</project>

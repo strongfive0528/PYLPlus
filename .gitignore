@@ -1,0 +1,17 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+/app/release
+/hidden-api-stub/bin
+
+# Release signing material must never be committed.
+keystore.properties
+*.jks
+*.keystore
