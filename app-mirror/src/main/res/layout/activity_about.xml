@@ -2,12 +2,14 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cs_background">
+    android:background="?attr/colorSurface">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:paddingStart="20dp" android:paddingEnd="20dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp">
 
     <TextView
         android:layout_width="match_parent"
@@ -29,9 +31,10 @@
         android:layout_height="wrap_content"
         android:text="软件使用方法请查看短视频平台介绍或访问 connect-screen.com 。屏连入口是扩展投屏模式，屏易连入口是镜像投屏模式。"
         android:textSize="16sp"
-        android:textColor="@color/cs_text"
+        android:textColor="?attr/colorOnSurface"
         android:background="@drawable/cs_card"
-        android:padding="18dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp"
         android:layout_marginBottom="16dp"/>
 
     <TextView
@@ -40,7 +43,7 @@
         android:layout_height="wrap_content"
         android:text="版本："
         android:textSize="16sp"
-        android:textColor="@color/cs_text_secondary"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:layout_marginTop="8dp"/>
 
     <TextView
@@ -49,9 +52,10 @@
         android:layout_height="wrap_content"
         android:text="最新版本：从QQ群 “安卓屏连” 获取"
         android:textSize="16sp"
-        android:textColor="@color/cs_primary"
+        android:textColor="?attr/colorPrimary"
         android:background="@drawable/cs_card"
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:layout_marginTop="16dp"
         android:clickable="true"/>
 
@@ -61,9 +65,10 @@
         android:layout_height="wrap_content"
         android:text="官网：connect-screen.com"
         android:textSize="16sp"
-        android:textColor="@color/cs_primary"
+        android:textColor="?attr/colorPrimary"
         android:background="@drawable/cs_card"
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:layout_marginTop="16dp"
         android:clickable="true"/>
 
@@ -73,9 +78,10 @@
         android:layout_height="wrap_content"
         android:text="小红书：安卓屏连"
         android:textSize="16sp"
-        android:textColor="@color/cs_primary"
+        android:textColor="?attr/colorPrimary"
         android:background="@drawable/cs_card"
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:layout_marginTop="16dp"
         android:clickable="true"
         android:autoLink="web"/>
@@ -86,9 +92,10 @@
         android:layout_height="wrap_content"
         android:text="b站：屏易连"
         android:textSize="16sp"
-        android:textColor="@color/cs_primary"
+        android:textColor="?attr/colorPrimary"
         android:background="@drawable/cs_card"
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:autoLink="web"/>
@@ -99,9 +106,10 @@
         android:layout_height="wrap_content"
         android:text="抖音：安卓屏连"
         android:textSize="16sp"
-        android:textColor="@color/cs_primary"
+        android:textColor="?attr/colorPrimary"
         android:background="@drawable/cs_card"
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:autoLink="web"/>
@@ -112,9 +120,10 @@
         android:layout_height="wrap_content"
         android:text="Youtube: 安卓屏连"
         android:textSize="16sp"
-        android:textColor="@color/cs_primary"
+        android:textColor="?attr/colorPrimary"
         android:background="@drawable/cs_card"
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:autoLink="web"/>

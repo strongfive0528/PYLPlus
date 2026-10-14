@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@color/cs_surface">
+    android:background="?attr/colorSurface">
 
     <EditText
         android:id="@+id/dpi_input"

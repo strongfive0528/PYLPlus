@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@color/cs_background"
+    android:background="?attr/colorSurface"
     android:padding="20dp"
     android:visibility="visible">
 
@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/shizukuPermissionBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,14 +47,14 @@
         android:layout_height="wrap_content"
         android:layout_weight="1" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/exitBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="退出" />
     </LinearLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/displayDeviceBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
         android:minWidth="200dp"
         android:text="屏幕" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/displaylinkBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
         android:minWidth="200dp"
         android:text="Displaylink" />
     
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/simulateScreenOffBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
         android:minWidth="200dp"
         android:text="模拟熄屏" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/touchpadBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
         android:minWidth="200dp"
         android:text="触控板" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/inputDeviceBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
         android:minWidth="200dp"
         android:text="设置" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/shizukuBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
         android:minWidth="200dp"
         android:text="Shizuku" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/aboutBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

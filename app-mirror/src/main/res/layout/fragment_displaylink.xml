@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="20dp"
-    android:background="@color/cs_background">
+    android:background="?attr/colorSurface">
 
     <TextView
         android:id="@+id/detailTitle"
@@ -123,7 +123,7 @@
             
     </LinearLayout>
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/rotatesWithContentCheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -131,7 +131,7 @@
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/skipMediaProjectionPermissionCheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -139,7 +139,7 @@
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/autoOpenLastAppCheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -147,14 +147,14 @@
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/mirrorViaDisplaylinkButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Displaylink 单应用投屏"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/launch_app_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
         android:visibility="gone"
         android:text="选择单个应用"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/view_virtual_display_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

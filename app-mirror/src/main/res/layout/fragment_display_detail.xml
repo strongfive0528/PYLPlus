@@ -2,8 +2,10 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
-    android:background="@color/cs_background">
+    android:paddingStart="20dp" android:paddingEnd="20dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    android:background="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +40,7 @@
                 android:layout_weight="1"
                 android:textSize="16sp"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/edit_resolution_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,7 +61,7 @@
                 android:layout_weight="1"
                 android:textSize="16sp"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/edit_dpi_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,7 +82,7 @@
                 android:layout_weight="1"
                 android:textSize="16sp"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/edit_rotation_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -95,7 +97,7 @@
             android:orientation="vertical"
             android:layout_marginTop="8dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/supported_modes_toggle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -106,7 +108,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                android:padding="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:textSize="14sp"
                 android:layout_marginStart="8dp"/>
         </LinearLayout>
@@ -117,13 +120,13 @@
             android:orientation="horizontal"
             android:layout_marginTop="8dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/start_launcher_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="投屏单个应用"/>
 
-            <CheckBox
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/autoOpenLastAppCheckbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -133,14 +136,14 @@
 
         </LinearLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/start_x11_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="投屏 Termux X11"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/touchpad_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -154,14 +157,14 @@
             android:orientation="horizontal"
             android:layout_marginTop="8dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/floating_button_toggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:text="展示悬浮返回键"/>
 
-            <CheckBox
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/force_landscape_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -170,7 +173,7 @@
                 android:visibility="gone"/>
         </LinearLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/goto_displaylink_button" 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -178,14 +181,14 @@
             android:visibility="gone"
             android:text="由 Displaylink 创建"/>
             
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/set_ime_policy_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:layout_marginTop="8dp"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/bridge_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

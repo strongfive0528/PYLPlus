@@ -26,6 +26,16 @@ import com.topjohnwu.superuser.Shell;
 import com.topjohnwu.superuser.ShellUtils;
 
 import java.lang.ref.WeakReference;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +51,100 @@ public class State {
     public static String serverUuid;
     private static Job currentJob;
     public static List<String> logs = new ArrayList<>();
+
+    private static final String LOG_FILE_NAME = "run_log.txt";
+    private static final int LOG_LOAD_LIMIT = 100;
+    private static final int LOG_FILE_LINE_LIMIT = 2000;
+    private static final String LOG_SESSION_SEPARATOR = "----------------------------------------";
+
+    private static File logFile;
+    private static int logAppendsSinceTrim;
+    private static boolean logPersistenceInitialized;
+    private static final Object logFileLock = new Object();
+
+    /**
+     * Restores the tail of the previous run and marks the boundary to this one, so the history
+     * survives a restart instead of being wiped on every launch.
+     */
+    public static void initLogPersistence(Context context) {
+        File file = new File(context.getFilesDir(), LOG_FILE_NAME);
+        synchronized (logFileLock) {
+            logFile = file;
+            if (logPersistenceInitialized) {
+                return;
+            }
+            logPersistenceInitialized = true;
+            logAppendsSinceTrim = 0;
+        }
+        logs.addAll(readRecentLogLines(file, LOG_LOAD_LIMIT));
+        log(LOG_SESSION_SEPARATOR);
+    }
+
+    private static List<String> readRecentLogLines(File file, int limit) {
+        LinkedList<String> tail = new LinkedList<>();
+        if (file == null || !file.exists()) {
+            return tail;
+        }
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                tail.addLast(line);
+                if (tail.size() > limit) {
+                    tail.removeFirst();
+                }
+            }
+        } catch (Throwable e) {
+            // A damaged log file must never stop the app from starting.
+        }
+        return tail;
+    }
+
+    private static void appendToLogFile(String message) {
+        File file;
+        synchronized (logFileLock) {
+            file = logFile;
+        }
+        if (file == null) {
+            return;
+        }
+        try {
+            synchronized (logFileLock) {
+                try (FileWriter writer = new FileWriter(file, true)) {
+                    writer.write(message);
+                    writer.write("\n");
+                }
+                if (++logAppendsSinceTrim >= 500) {
+                    logAppendsSinceTrim = 0;
+                    trimLogFile(file);
+                }
+            }
+        } catch (Throwable e) {
+            // Logging is best effort; never let file IO break the caller.
+        }
+    }
+
+    private static void trimLogFile(File file) {
+        try {
+            List<String> lines = readRecentLogLines(file, LOG_FILE_LINE_LIMIT + 1);
+            if (lines.size() <= LOG_FILE_LINE_LIMIT) {
+                return;
+            }
+            LinkedList<String> keep = new LinkedList<>(lines);
+            while (keep.size() > LOG_FILE_LINE_LIMIT) {
+                keep.removeFirst();
+            }
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(file, false), StandardCharsets.UTF_8))) {
+                for (String line : keep) {
+                    writer.write(line);
+                    writer.write("\n");
+                }
+            }
+        } catch (Throwable e) {
+            // ignore
+        }
+    }
     public static DisplaylinkState displaylinkState = new DisplaylinkState();
     private static MediaProjection mediaProjection;
     public static MediaProjection mediaProjectionInUse;
@@ -165,6 +269,7 @@ public class State {
     public static void log(String message) {
         logs.add(message);
         Log.i("ConnectScreen", message);
+        appendToLogFile(message);
         if (currentActivity != null && currentActivity.get() != null) {
             IMainActivity  mainActivity = (IMainActivity) currentActivity.get();
             mainActivity.updateLogs();

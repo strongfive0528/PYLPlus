@@ -83,6 +83,7 @@ public class BridgeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        UiTheme.apply(this);
         instance = this;
 
         // 隐藏标题栏

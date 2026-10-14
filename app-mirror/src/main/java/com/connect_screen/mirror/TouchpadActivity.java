@@ -156,6 +156,7 @@ public class TouchpadActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        UiTheme.apply(this);
         
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cs_primary">#AFCBFF</color>
+    <color name="cs_primary_soft">#263B5C</color>
+    <color name="cs_surface">#121318</color>
+    <color name="cs_text">#E2E2E9</color>
+    <color name="cs_text_secondary">#C4C6D0</color>
+    <color name="cs_danger">#FFB4AB</color>
+    <color name="cs_danger_soft">#5C1714</color>
+</resources>

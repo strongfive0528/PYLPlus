@@ -46,8 +46,10 @@ public class MirrorSettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        UiTheme.apply(this);
         setContentView(R.layout.activity_mirror_settings);
         preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        setupAppearanceControls();
 
         // 两个入口共用同一套确认与重启逻辑：顶部的提示卡片按钮，以及常驻右下角的圆形按钮。
         findViewById(R.id.applySettingsButton).setOnClickListener(v -> confirmApplySettingsAndRestart());
@@ -274,6 +276,19 @@ public class MirrorSettingsActivity extends AppCompatActivity {
         updateAccessibilityStatus(accessibilityStatus);
         updateOverlayStatus(overlayStatus);
 
+        // The entire status row is an entry point; users should not have to wait
+        // for a small conditional "grant" button to become visible.
+        shizukuStatus.setOnClickListener(v -> State.startNewJob(new AcquireShizuku()));
+        accessibilityStatus.setOnClickListener(v ->
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
+        overlayStatus.setOnClickListener(v -> startActivity(new Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()))));
+        TextView microphoneStatus = findViewById(R.id.microphoneStatus);
+        microphoneStatus.setOnClickListener(v -> startActivity(new Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:" + getPackageName()))));
+
         // 添加选择应用按钮点击事件
         selectAppButton.setOnClickListener(v -> {
             showAppSelectionDialog();
@@ -432,6 +447,35 @@ public class MirrorSettingsActivity extends AppCompatActivity {
             preventAutoLockCheckbox.setEnabled(false);
         }
 
+    }
+
+    private void setupAppearanceControls() {
+        Spinner modeSpinner = findViewById(R.id.appearanceModeSpinner);
+        String[] modeValues = {UiTheme.MODE_SYSTEM, UiTheme.MODE_LIGHT, UiTheme.MODE_DARK, UiTheme.MODE_OLED};
+        ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
+                new String[]{"Follow system", "Light", "Dark", "OLED black"});
+        modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        modeSpinner.setAdapter(modeAdapter);
+
+        SharedPreferences appearance = UiTheme.prefs(this);
+        modeSpinner.setSelection(indexOf(modeValues, appearance.getString(UiTheme.MODE, UiTheme.MODE_LIGHT)));
+        modeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onNothingSelected(AdapterView<?> parent) { }
+            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String mode = modeValues[modeSpinner.getSelectedItemPosition()];
+                if (!mode.equals(appearance.getString(UiTheme.MODE, UiTheme.MODE_LIGHT))) {
+                    UiTheme.saveMode(MirrorSettingsActivity.this, mode);
+                    recreate();
+                }
+            }
+        });
+    }
+
+    private int indexOf(String[] values, String value) {
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].equals(value)) return i;
+        }
+        return 0;
     }
 
     @Override

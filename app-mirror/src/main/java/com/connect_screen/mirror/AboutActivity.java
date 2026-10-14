@@ -23,6 +23,7 @@ public class AboutActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        UiTheme.apply(this);
         setContentView(R.layout.activity_about);
         
         TextView aboutContent = findViewById(R.id.aboutContent);

@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cs_background"
+    android:background="?attr/colorSurface"
     android:fillViewport="true"
     android:clipToPadding="false">
 
@@ -10,7 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingStart="20dp" android:paddingEnd="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,7 +30,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="CONNECT SCREEN"
-                    android:textColor="@color/cs_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="11sp"
                     android:textStyle="bold"
                     android:letterSpacing="0.12" />
@@ -41,7 +43,7 @@
                     android:textAppearance="@style/TextAppearance.ConnectScreen.Title" />
             </LinearLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/settingsBtn"
                 style="@style/Widget.ConnectScreen.Button.Secondary"
                 android:layout_width="wrap_content"
@@ -55,38 +57,31 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:background="@drawable/cs_card"
-            android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="22dp">
+            android:paddingTop="22dp"
+            android:paddingBottom="22dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
                 android:orientation="horizontal">
-
-                <View
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:background="@drawable/cs_status_dot" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text="当前状态"
-                    android:textColor="@color/cs_text_secondary"
-                    android:textSize="13sp" />
-            </LinearLayout>
+                    android:text="当前状态："
+                    android:textAppearance="@style/TextAppearance.ConnectScreen.Section" />
 
-            <TextView
-                android:id="@+id/mirrorStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:textColor="@color/cs_text"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/mirrorStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:textAppearance="@style/TextAppearance.ConnectScreen.Section"
+                    android:textColor="?attr/colorPrimary" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/mirrorStatusDetail"
@@ -94,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:lineSpacingExtra="4dp"
-                android:textColor="@color/cs_text_secondary"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="14sp" />
         </LinearLayout>
 
@@ -118,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/screenOffBtn"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -126,7 +121,7 @@
                     android:layout_marginEnd="6dp"
                     android:text="熄屏" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/touchScreenBtn"
                     style="@style/Widget.ConnectScreen.Button.Secondary"
                     android:layout_width="0dp"
@@ -145,7 +140,7 @@
             android:text="服务管理"
             android:textAppearance="@style/TextAppearance.ConnectScreen.Section" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/exitBtn"
             style="@style/Widget.ConnectScreen.Button.Danger"
             android:layout_width="match_parent"
@@ -154,12 +149,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginTop="28dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/cs_card"
             android:orientation="vertical"
-            android:padding="18dp">
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -178,14 +175,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="实时更新"
-                    android:textColor="@color/cs_text_secondary"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="12sp" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/logRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="168dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:layout_marginTop="10dp"
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="true" />

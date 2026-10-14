@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
     android:layout_margin="8dp"
     android:background="@drawable/cs_card">
 
@@ -19,7 +20,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/cs_text" />
+            android:textColor="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/display_name"
@@ -27,10 +28,10 @@
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:layout_marginTop="4dp"
-            android:textColor="@color/cs_text_secondary" />
+            android:textColor="?attr/colorOnSurfaceVariant" />
     </LinearLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_view_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

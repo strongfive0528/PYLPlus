@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@color/cs_surface">
+    android:background="?attr/colorSurface">
 
     <TextView
         android:layout_width="match_parent"
@@ -13,21 +13,21 @@
         android:textSize="14sp"
         android:lineSpacingExtra="4dp"/>
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/rotatesWithContentCheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="跟随内容旋转"
         android:layout_marginTop="16dp"/>
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/skipMediaProjectionPermissionCheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="跳过询问媒体投影权限"
         android:layout_marginTop="16dp"/>
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/autoBridgeCheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

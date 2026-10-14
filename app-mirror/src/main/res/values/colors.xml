@@ -8,15 +8,16 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#FF0000FF</color>
-    <color name="cs_primary">#4056C8</color>
-    <color name="cs_primary_dark">#293A9A</color>
-    <color name="cs_accent">#3D71DB</color>
-    <color name="cs_background">#F4F6FB</color>
+    <color name="cs_primary">#1769AA</color>
+    <color name="cs_primary_dark">#0D4778</color>
+    <color name="cs_accent">#2B7BBB</color>
+    <color name="cs_background">#F7F9FC</color>
     <color name="cs_surface">#FFFFFFFF</color>
-    <color name="cs_text">#1D2740</color>
-    <color name="cs_text_secondary">#62708A</color>
-    <color name="cs_outline">#DCE3F0</color>
-    <color name="cs_primary_soft">#E9EDFC</color>
-    <color name="cs_danger">#A9424B</color>
-    <color name="cs_danger_soft">#FFF0F1</color>
+    <color name="cs_surface_variant">#EAF1F8</color>
+    <color name="cs_text">#172033</color>
+    <color name="cs_text_secondary">#59677B</color>
+    <color name="cs_outline">#B9C6D6</color>
+    <color name="cs_primary_soft">#DDEBFA</color>
+    <color name="cs_danger">#B3261E</color>
+    <color name="cs_danger_soft">#FCE8E6</color>
 </resources>

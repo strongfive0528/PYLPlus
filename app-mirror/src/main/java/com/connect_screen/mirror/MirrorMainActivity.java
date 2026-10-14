@@ -1,6 +1,8 @@
 package com.connect_screen.mirror;
 
+import android.Manifest;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,15 +11,18 @@ import android.hardware.display.VirtualDisplay;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionConfig;
 import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +35,8 @@ import com.connect_screen.mirror.shizuku.ShizukuUtils;
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 import java.lang.ref.WeakReference;
+import java.util.HashSet;
+import java.util.Set;
 
 import rikka.shizuku.Shizuku;
 import com.topjohnwu.superuser.Shell;
@@ -47,6 +54,17 @@ public class MirrorMainActivity extends AppCompatActivity implements IMainActivi
     public static final int REQUEST_CODE_MEDIA_PROJECTION = 1001; // 定义一个请求码
     public static final int REQUEST_RECORD_AUDIO_PERMISSION = 1002;
     public static final String TAG = "MirrorMainActivity";
+
+    private static final String FIRST_RUN_PREFS = "first_run";
+    private static final String KEY_PERMISSION_TIP_VERSION = "permission_tip_version";
+
+    private static final int PERMISSION_STEP_MICROPHONE = 0;
+    private static final int PERMISSION_STEP_ACCESSIBILITY = 1;
+    private static final int PERMISSION_STEP_OVERLAY = 2;
+    private static final int PERMISSION_STEP_COUNT = 3;
+
+    private boolean permissionWalkActive;
+    private final Set<Integer> permissionWalkAttempted = new HashSet<>();
 
     private RecyclerView logRecyclerView;
     private LogAdapter logAdapter;
@@ -101,6 +119,7 @@ public class MirrorMainActivity extends AppCompatActivity implements IMainActivi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        UiTheme.apply(this);
         // 设置 State.currentActivity 为当前的 MainActivity 实例
         State.setCurrentActivity(this);
 
@@ -136,6 +155,7 @@ public class MirrorMainActivity extends AppCompatActivity implements IMainActivi
 
         // 初始化日志列表
         logRecyclerView = findViewById(R.id.logRecyclerView);
+        State.initLogPersistence(this);
         logAdapter = new LogAdapter(State.logs);
         logRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         logRecyclerView.setAdapter(logAdapter);
@@ -146,6 +166,97 @@ public class MirrorMainActivity extends AppCompatActivity implements IMainActivi
 
         // 初始化主界面控件
         initHomeControls();
+
+        showPermissionTipIfNeeded();
+    }
+
+    /**
+     * Lists the permissions streaming depends on and hands the user straight to the settings page,
+     * so an unnoticed missing grant (for example RECORD_AUDIO) is caught up front. Shown on the
+     * first launch of a build, and on every later launch while one of the required grants is still
+     * missing. Shizuku is deliberately excluded: it is optional and has no system settings page.
+     */
+    private void showPermissionTipIfNeeded() {
+        SharedPreferences firstRun = getSharedPreferences(FIRST_RUN_PREFS, MODE_PRIVATE);
+        boolean firstLaunchOfThisBuild =
+                firstRun.getInt(KEY_PERMISSION_TIP_VERSION, -1) != BuildConfig.VERSION_CODE;
+        boolean requiredPermissionMissing = !isPermissionStepSatisfied(PERMISSION_STEP_MICROPHONE)
+                || !isPermissionStepSatisfied(PERMISSION_STEP_ACCESSIBILITY)
+                || !isPermissionStepSatisfied(PERMISSION_STEP_OVERLAY);
+        if (!firstLaunchOfThisBuild && !requiredPermissionMissing) {
+            return;
+        }
+        firstRun.edit().putInt(KEY_PERMISSION_TIP_VERSION, BuildConfig.VERSION_CODE).apply();
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("开始前请先完成授权")
+                .setMessage("串流依赖以下权限：\n\n"
+                        + "· 麦克风：采集系统声音；未授权时串流会中断\n"
+                        + "· 无障碍服务：触摸与按键控制\n"
+                        + "· 悬浮窗：显示悬浮返回按钮\n"
+                        + "· Shizuku（可选）：单应用投屏与熄屏控制\n\n"
+                        + "关闭本提示后将打开设置页，请在“连接准备”中逐项确认授权状态。")
+                .setPositiveButton("去设置", null)
+                .create();
+        DialogStyle.apply(dialog);
+        dialog.setOnDismissListener(ignored -> {
+            permissionWalkActive = true;
+            continuePermissionWalk();
+        });
+        dialog.show();
+    }
+
+    private boolean isPermissionStepSatisfied(int step) {
+        switch (step) {
+            case PERMISSION_STEP_MICROPHONE:
+                return ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                        == PackageManager.PERMISSION_GRANTED;
+            case PERMISSION_STEP_ACCESSIBILITY:
+                return TouchpadAccessibilityService.isAccessibilityServiceEnabled(this);
+            case PERMISSION_STEP_OVERLAY:
+                return Settings.canDrawOverlays(this);
+            default:
+                return true;
+        }
+    }
+
+    private void launchPermissionStep(int step) {
+        switch (step) {
+            case PERMISSION_STEP_MICROPHONE:
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
+                break;
+            case PERMISSION_STEP_ACCESSIBILITY:
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                break;
+            case PERMISSION_STEP_OVERLAY:
+                startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName())));
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Walks the missing permissions one at a time, sending the user to the same destination the
+     * matching settings row uses. A step is only opened once, then the settings page follows.
+     */
+    private void continuePermissionWalk() {
+        if (!permissionWalkActive) {
+            return;
+        }
+        for (int step = 0; step < PERMISSION_STEP_COUNT; step++) {
+            if (permissionWalkAttempted.contains(step) || isPermissionStepSatisfied(step)) {
+                continue;
+            }
+            permissionWalkAttempted.add(step);
+            State.log("权限引导：跳转未授权项 " + (step + 1));
+            launchPermissionStep(step);
+            return;
+        }
+        permissionWalkActive = false;
+        startActivity(new Intent(this, MirrorSettingsActivity.class));
     }
 
     private void ensureAccessiblityServiceStarted() {
@@ -217,6 +328,7 @@ public class MirrorMainActivity extends AppCompatActivity implements IMainActivi
         super.onResume();
         State.setCurrentActivity(this);
         refresh();
+        continuePermissionWalk();
     }
 
     @Override
@@ -366,7 +478,8 @@ public class MirrorMainActivity extends AppCompatActivity implements IMainActivi
             }
         } else {
             newUiState.mirrorStatusText = "等待连接";
-            newUiState.mirrorStatusDetailText = "连接显示器，或使用 Moonlight 无线投屏。USB 2.0 手机需要 DisplayLink 扩展坞。";
+            newUiState.mirrorStatusDetailText = "连接显示器，或使用 Moonlight 无线投屏。USB 2.0 手机需要 DisplayLink 扩展坞。"
+                    + "如遇串流连接后崩溃，请对照设置页对应内容检查权限授权状态。";
             try {
                 for (String ip : SunshineService.getAllWifiIpAddresses(this)) {
                     newUiState.mirrorStatusDetailText += "\n" + ip;

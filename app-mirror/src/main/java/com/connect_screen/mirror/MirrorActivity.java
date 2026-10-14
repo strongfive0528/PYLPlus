@@ -111,6 +111,7 @@ public class MirrorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        UiTheme.apply(this);
         instance = this;
 
         // 读取设置

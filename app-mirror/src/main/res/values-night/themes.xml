@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#AFCBFF</item><item name="colorSecondary">#B5C7FF</item>
+        <item name="colorSurface">#121318</item><item name="colorSurfaceVariant">#1E2027</item>
+        <item name="colorOnSurface">#E2E2E9</item><item name="colorOnSurfaceVariant">#C4C6D0</item>
+        <item name="android:windowBackground">#121318</item><item name="android:statusBarColor">#121318</item><item name="android:navigationBarColor">#121318</item>
+        <item name="android:windowLightStatusBar">false</item><item name="android:windowLightNavigationBar">false</item>
+    </style>
+    <style name="AppTheme.Violet" parent="AppTheme"><item name="colorPrimary">#D0BCFF</item><item name="colorSecondary">#CCC2DC</item><item name="colorSurface">#15121A</item><item name="colorSurfaceVariant">#211F26</item></style>
+    <style name="AppTheme.Teal" parent="AppTheme"><item name="colorPrimary">#7FE8D5</item><item name="colorSecondary">#80DBC9</item><item name="colorSurface">#101817</item><item name="colorSurfaceVariant">#1B2422</item></style>
+    <style name="TextAppearance.ConnectScreen.Title" parent="TextAppearance.Material3.HeadlineMedium"><item name="android:textColor">?attr/colorOnSurface</item></style>
+    <style name="TextAppearance.ConnectScreen.Section" parent="TextAppearance.Material3.TitleMedium"><item name="android:textColor">?attr/colorOnSurface</item><item name="android:textSize">18sp</item></style>
+    <style name="TextAppearance.ConnectScreen.Body" parent="TextAppearance.Material3.BodyMedium"><item name="android:textColor">?attr/colorOnSurfaceVariant</item></style>
+    <style name="TextAppearance.ConnectScreen.Overline" parent="TextAppearance.Material3.LabelSmall"><item name="android:textColor">?attr/colorPrimary</item><item name="android:textSize">21sp</item></style>
+</resources>
