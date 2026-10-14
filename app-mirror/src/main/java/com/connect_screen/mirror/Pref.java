@@ -3,6 +3,8 @@ package com.connect_screen.mirror;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.connect_screen.mirror.gamepad.GamepadRemap;
+
 public class Pref {
     public static final String KEY_AUTO_ROTATE = "auto_rotate";
     public static final String KEY_AUTO_SCALE = "auto_scale";
@@ -42,6 +44,7 @@ public class Pref {
     public static final int GAMEPAD_TRIGGER_DIGITAL = 0;
     public static final int GAMEPAD_TRIGGER_ANALOG = 1;
     public static final int GAMEPAD_TRIGGER_BOTH = 2;
+    public static final String KEY_GAMEPAD_REMAP = "gamepad_button_remap";
     public static final String KEY_AUDIO_PLAYBACK_MODE = "audio_playback_mode";
     public static final int AUDIO_PLAYBACK_CLIENT_REQUEST = 0;
     public static final int AUDIO_PLAYBACK_CLIENT = 1;
@@ -164,6 +167,62 @@ public class Pref {
         int mode = getInt(KEY_GAMEPAD_TRIGGER_MODE, GAMEPAD_TRIGGER_DIGITAL);
         return mode == GAMEPAD_TRIGGER_ANALOG || mode == GAMEPAD_TRIGGER_BOTH
                 ? mode : GAMEPAD_TRIGGER_DIGITAL;
+    }
+
+    private static int[] gamepadRemapCache;
+
+    /** Source button to target button table; identity until the user changes something. */
+    public static synchronized int[] getGamepadRemap() {
+        if (gamepadRemapCache != null) {
+            return gamepadRemapCache;
+        }
+        int[] mapping = GamepadRemap.identity();
+        String raw = getString(KEY_GAMEPAD_REMAP, "");
+        if (raw != null && !raw.isEmpty()) {
+            String[] parts = raw.split(",");
+            for (int i = 0; i < mapping.length && i < parts.length; i++) {
+                try {
+                    int target = Integer.parseInt(parts[i].trim());
+                    if (target >= 0 && target < mapping.length) {
+                        mapping[i] = target;
+                    }
+                } catch (NumberFormatException ignored) {
+                    // Keep the identity entry for a malformed value.
+                }
+            }
+        }
+        gamepadRemapCache = mapping;
+        return mapping;
+    }
+
+    public static synchronized void setGamepadRemapTarget(int source, int target) {
+        int[] mapping = getGamepadRemap();
+        if (source < 0 || source >= mapping.length || target < 0 || target >= mapping.length) {
+            return;
+        }
+        int[] updated = mapping.clone();
+        updated[source] = target;
+        android.util.Log.i("ConnectScreen", "手柄重映射写入: " + source + " -> " + target);
+        saveGamepadRemap(updated);
+    }
+
+    public static synchronized void resetGamepadRemap() {
+        saveGamepadRemap(GamepadRemap.identity());
+    }
+
+    private static void saveGamepadRemap(int[] mapping) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < mapping.length; i++) {
+            if (i > 0) {
+                builder.append(',');
+            }
+            builder.append(mapping[i]);
+        }
+        gamepadRemapCache = mapping.clone();
+        SharedPreferences preferences = getPreferences();
+        if (preferences != null) {
+            preferences.edit().putString(KEY_GAMEPAD_REMAP, builder.toString()).apply();
+        }
     }
 
     public static int getAudioPlaybackMode() {

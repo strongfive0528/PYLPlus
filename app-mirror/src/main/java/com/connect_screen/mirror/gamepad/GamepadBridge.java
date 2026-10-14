@@ -26,8 +26,10 @@ public final class GamepadBridge {
                                  int leftX, int leftY, int rightX, int rightY) {
         IUserService service = State.userService;
         if (service == null) return false;
+        long remapped = GamepadRemap.apply(Pref.getGamepadRemap(), buttons, leftTrigger, rightTrigger);
         try {
-            return service.updateGamepad(buttons, leftTrigger, rightTrigger,
+            return service.updateGamepad(GamepadRemap.buttonsOf(remapped),
+                    GamepadRemap.leftTriggerOf(remapped), GamepadRemap.rightTriggerOf(remapped),
                     leftX, leftY, rightX, rightY);
         } catch (RemoteException e) {
             return false;

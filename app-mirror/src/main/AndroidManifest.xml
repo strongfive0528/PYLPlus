@@ -53,6 +53,12 @@
             android:launchMode="singleTask"
             android:exported="false"
             android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".GamepadRemapActivity"
+            android:launchMode="singleTask"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
         
         <activity
             android:name=".AboutActivity"

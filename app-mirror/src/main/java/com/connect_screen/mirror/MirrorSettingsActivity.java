@@ -119,6 +119,8 @@ public class MirrorSettingsActivity extends AppCompatActivity {
             }
         });
         SwitchCompat audioOverrideCheckbox = findViewById(R.id.audioOverrideCheckbox);
+        findViewById(R.id.gamepadRemapButton).setOnClickListener(v ->
+                startActivity(new Intent(this, GamepadRemapActivity.class)));
         Spinner audioDestinationSpinner = findViewById(R.id.audioDestinationSpinner);
         ArrayAdapter<String> audioDestinationAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item,
