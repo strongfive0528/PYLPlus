@@ -76,7 +76,7 @@
 
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="声音" android:textAppearance="@style/TextAppearance.ConnectScreen.Overline" />
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:layout_marginBottom="28dp" android:background="@drawable/cs_settings_group" android:orientation="vertical" android:paddingTop="20dp" android:paddingBottom="20dp">
-                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/audioOverrideCheckbox" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="覆盖默认音频输出" />
+                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/audioOverrideCheckbox" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="覆盖默认音频输出位置" />
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="输出设备" android:textAppearance="@style/TextAppearance.ConnectScreen.Body" />
                 <Spinner android:id="@+id/audioDestinationSpinner" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" />
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="音频采集方式" android:textAppearance="@style/TextAppearance.ConnectScreen.Body" />
